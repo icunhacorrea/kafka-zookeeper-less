@@ -1,8 +1,8 @@
-build:
-	docker build -t icorrea:kafka-zookeeper-less docker/
-
 clean:
 	docker system prune
 
 up:
-	docker-compose up
+	docker-compose up --build
+
+up-daemon:
+	docker-compose up --build -d

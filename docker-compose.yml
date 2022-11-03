@@ -5,20 +5,25 @@ services:
     image: icorrea:kafka-zookeeper-less
     hostname: kafka1
     restart: always
+    build:
+      context: ./docker/
+      dockerfile: Dockerfile
     networks:
       kafka-net:
         ipv4_address: 172.21.0.5
     ports:
-      - 9092:9092
+      - 9093:9093
     environment:
       HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
       KAFKA_BROKER_ID: 1
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://172.21.0.5:9092,OUTSIDE://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://172.21.0.5:9092,OUTSIDE://localhost:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9093,CONTROLLER://0.0.0.0:9094
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      PROCESS_ROLES: broker,controller
-      CONTROLLER_QUORUM_VOTERS: 1@kafka1:9093
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka1:9094
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kafka1/logs
 
 networks:
   kafka-net:

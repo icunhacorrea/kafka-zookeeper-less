@@ -16,22 +16,27 @@ function alterConfig(){
 
 }
 
+function formatStorage() {
+
+	echo "[Configuring] Formating storage"
+	uuid=$(/opt/kafka/bin/kafka-storage.sh random-uuid)
+	echo "[Configuring] New uuid: $uuid"
+	/opt/kafka/bin/kafka-storage.sh format --config /opt/kafka/config/server.properties --cluster-id "${uuid}" --ignore-formatted
+
+}
+
 if [[ -z "$KAFKA_PORT" ]]; then
     export KAFKA_PORT=9092
 fi
 
 if [[ -z "$KAFKA_ZOOKEEPER_CONNECT" && 
-	-z "$PROCESS_ROLES" ]]; then
+	-z "$KAFKA_PROCESS_ROLES" ]]; then
     echo "ERROR: missing mandatory config: KAFKA_ZOOKEEPER_CONNECT"
     exit 1
 fi
 
-if [[ ! -z "$PROCESS_ROLES" ]]; then
-	echo "process.roles=" > $KAFKA_HOME/config/server.properties
-fi
-
 if [[ ! -z "$CONTROLLER_QUORUM_VOTERS" ]]; then
-	echo "controller.quorum.voters=" > $KAFKA_HOME/config/server.properties
+	sed -i '/^zookeeper/ s/./#&/' $KAFKA_HOME/config/server.properties
 fi
 
 if [[ -z "$KAFKA_ADVERTISED_PORT" && \
@@ -114,5 +119,7 @@ for VAR in $(env); do
         alterConfig "$kafka_name" "${!env_var}" "$KAFKA_HOME/config/server.properties"
     fi
 done
+
+formatStorage
 
 exec "$KAFKA_HOME/bin/kafka-server-start.sh" "$KAFKA_HOME/config/server.properties"
