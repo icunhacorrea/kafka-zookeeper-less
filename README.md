@@ -2,7 +2,7 @@
 Test of a Kafka Zookeeper-less using docker and implementation of consumer and producer in rust language.
 
 # Run brokers kafka
-You must have docker and docker-compuse installed in your environment. After that execute the 
+You must have docker and docker-compose installed in your environment. After that, execute the 
 following command:
 
 ```bash
